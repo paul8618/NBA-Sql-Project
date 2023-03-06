@@ -119,23 +119,25 @@ FROM [NBA SQL Project]..nba2022pct n
 Join [NBA SQL Project]..teams t on n.Home_team_name = t.NICKNAME 
 
 select *
-FROM [NBA SQL Project]..nba2022pct n
+FROM [NBA SQL Project]..nba2022pct 
 
-
+-- To determine the top socrer of each team and their average points per game 
 WITH cte AS (
-    SELECT team_city, Player_name, round(Avg(Pts), 2) as average_pts_per_game,
+    SELECT team_city, Player_name as Top_Scorer, round(Avg(Pts), 2) as average_pts_per_game,
            ROW_NUMBER() OVER (PARTITION BY team_city ORDER BY round(Avg(Pts), 2) DESC) AS rn
     FROM [NBA SQL Project]..games_details gd 
     JOIN [NBA SQL Project]..games g ON gd.game_Id = g.game_id
     WHERE g.SEASON = 2022
     GROUP BY Player_name, team_city
 )
-SELECT city, Home_team_name, Total_Games_played, Total_wins, Win_Percentage, Player_name, Average_pts_per_game
+SELECT city, Home_team_name, Total_Games_played, Total_wins, Win_Percentage, Top_Scorer, Average_pts_per_game
 FROM cte 
 JOIN [NBA SQL Project]..nba2022pct p ON cte.team_city = p.city
 WHERE rn = 1
 ORDER BY average_pts_per_game DESC;
 
+select* 
+FROM [NBA SQL Project]..sqlnba2022pct
 
 
 
